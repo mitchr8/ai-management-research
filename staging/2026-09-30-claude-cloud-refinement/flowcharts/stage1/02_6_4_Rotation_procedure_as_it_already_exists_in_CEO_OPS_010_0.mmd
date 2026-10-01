@@ -1,0 +1,14 @@
+flowchart LR
+  A[Signal fires or safe boundary reached] --> B[1 Finish atomic step only]
+  B --> C[2 Rewrite compact recovery handoff in place]
+  C --> D[3 Publish checkpoint Response-To via file-write tool]
+  D --> E[4 Stop, old chat kept as L5 history]
+  E --> F[5 Chief DONE_EVENT, evidence-first check handoff + Response-To]
+  F --> G{Both landed?}
+  G -- no --> G1[Finish the missing durable write in scope, no new approval]
+  G1 --> F
+  G -- yes --> H[6 Chief to CEO to EODA build and store launch packet]
+  H --> I[Chief renders PASTE INTO platform + chat + model + effort]
+  I --> J[7 Owner sends once, SENT_EVENT, No-Idle rescan]
+  J --> K["8 Fresh session: read handoff first, router RT0-RT3"]
+  K --> L[9 One stage, durable state, rotate on next signal]

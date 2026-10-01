@@ -1,0 +1,19 @@
+flowchart TD
+  A["Session start: read manifest header only"] --> B{RT0 identity match?}
+  B -- no --> B1["FAIL CLOSED: return canonical destination, write nothing"]
+  B -- yes --> C{RT1 manifest CURRENT and ROUTING_AUTHORITY YES?}
+  C -- no --> C1[Read L2 handoff only, mark NOT_ROUTING_AUTHORITY, reconcile]
+  C -- yes --> D{RT2 all pointers reachable?}
+  D -- no --> D1["STOP_ON_EXCEPTION: pointer integrity failure"]
+  D -- yes --> E{RT3 contradiction with fresher evidence?}
+  E -- yes --> E1[NEEDS_RECONCILIATION on the disputed claim, continue safe work]
+  E -- no --> F[RT4 load L1 subset + L2 handoff + current stage packet]
+  F --> G{RT5 stage names a domain module?}
+  G -- yes --> G1[load that module]
+  G -- no --> H
+  G1 --> H{RT6 acceptance needs independent verification?}
+  H -- yes --> H1[WAIT_DEPENDENCY, never self-certify]
+  H -- no --> I{RT7 provider variant needed?}
+  I -- yes --> I1[load variant or log missing-variant trigger]
+  I -- no --> J[Execute stage, checkpoint at boundary]
+  I1 --> J
