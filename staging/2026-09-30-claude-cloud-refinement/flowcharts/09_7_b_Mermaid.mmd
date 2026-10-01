@@ -1,0 +1,58 @@
+flowchart LR
+  subgraph RI["Routing inputs - from the Owner-accepted Checklist 6 list"]
+    R1["task or decision class"]
+    R2["project or role"]
+    R3["lifecycle or state"]
+    R4["authority or risk class"]
+    R5["provider or model"]
+    R6["freshness or staleness"]
+    R7["contradiction or anomaly state"]
+    R8["dependency or gate state"]
+  end
+  L0["L0 CONTEXT MANIFEST / ROUTER - very small, identifies role, phase, authoritative surfaces, module map, trigger conditions, fallback route"]
+  L1["L1 ALWAYS-READ CORE - mission, authority boundaries, non-negotiable principles, source precedence, safety constraints, universal trigger and route rules"]
+  L2["L2 CURRENT STATE / HANDOFF - objective, active lanes, decisions, replay guards, blockers, exact next action, identifiers - target at most 12,000 chars"]
+  L3{"L3 CONDITIONAL MODULES - loaded only when a router condition matches"}
+  M1["provider, quota, scheduler"]
+  M2["destructive-media handling"]
+  M3["role-qualification or reference corpus"]
+  M4["delivery assurance"]
+  M5["owner-approval policy"]
+  M6["trigger assurance"]
+  M7["CANDIDATE - shared project identity-gate module per MSA-CEO-018"]
+  M8["firmware, QA, commercial licensing and other domain modules"]
+  L4["L4 DEEP REFERENCE / EVIDENCE - primary sources, standards, design docs, logs, incident reports, code pointers - read only when a module or contradiction points here"]
+  L5["L5 ARCHIVE / HISTORICAL MEMORY - retired CURRENT files, superseded designs, conversation-derived rationale - never current truth by default, retrieved by topic, stable ID, project, decision class, date"]
+  FB["FALLBACK - cannot classify safely, broaden retrieval and reconcile, do not proceed from incomplete context"]
+  PF["POINTER FAILURE - broken or missing pointer is a failure, not an invitation to guess"]
+  CUR["ChatGPT-side curation - when L2 crosses a size threshold, archive first, move detail behind pointers into L3 to L5, never delete rationale"]
+  CS["Claude-specific subset - L1 subset plus L2 execution handoff plus router-selected L3 modules only"]
+  R1 --> L0
+  R2 --> L0
+  R3 --> L0
+  R4 --> L0
+  R5 --> L0
+  R6 --> L0
+  R7 --> L0
+  R8 --> L0
+  L0 -->|"always"| L1
+  L0 -->|"always"| L2
+  L0 -->|"condition matches"| L3
+  L0 -.->|"cannot classify"| FB
+  L0 -.->|"pointer broken"| PF
+  L3 --> M1
+  L3 --> M2
+  L3 --> M3
+  L3 --> M4
+  L3 --> M5
+  L3 --> M6
+  L3 -.-> M7
+  L3 --> M8
+  M1 -->|"module or contradiction points deeper"| L4
+  M3 -->|"deep source"| L4
+  M6 -->|"evidence"| L4
+  L4 -->|"historical reasoning needed"| L5
+  L2 -->|"size threshold crossed"| CUR
+  CUR --> L5
+  CUR --> L3
+  L0 -.->|"Claude worker"| CS

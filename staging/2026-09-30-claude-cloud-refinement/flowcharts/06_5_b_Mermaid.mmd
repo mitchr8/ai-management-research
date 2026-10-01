@@ -1,0 +1,51 @@
+flowchart TD
+  Q0["A claim is needed for consequential routing, activation, acceptance, pause or cross-project serialization"]
+  T{"Claim type - which source is authoritative for this claim"}
+  L1["1 direct Owner event evidence - what the Owner sent, did or observed"]
+  L2["2 fresh runtime, repository or tool evidence - observed technical facts in scope"]
+  L3["3 Project PM / Control Room - project truth, implementation, sequencing, final acceptance"]
+  L4["4 recipient Response-To or recipient durable current state - exact directive consumed or completed"]
+  L5["5 Delivery Assurance - derived delivery, readiness, in-flight state after reconciliation"]
+  L6["6 project Management summaries - Executive Status, To_Management"]
+  L7["7 Chief CURRENT - derived Owner-facing coordination and restart state"]
+  L8["8 Owner Brief - display only"]
+  L9["9 other derived Management summaries"]
+  FR{"Is that source fresh for this claim"}
+  ST["STALE - event-first invalidation, age guardrail, or size or contradiction threshold"]
+  MARK["FRESHNESS_STATE = STALE or NEEDS_RECONCILIATION, ROUTING_AUTHORITY = NO or LIMITED, visible on the surface"]
+  REF["one targeted refresh of the authoritative source - prefer a single PM refresh request over a broad executive scan"]
+  CF{"Do authoritative sources conflict, or is freshness unprovable"}
+  NR["NEEDS_RECONCILIATION - record exact claim, conflicting sources, times and authority dimension"]
+  FC["fail closed only for the dependent consequential action, continue safe independent work"]
+  USE["use the freshest source authoritative for this claim, provisionally"]
+  GO["proceed - a stale or lower-precedence derived surface may inform reconciliation but never independently drives the action"]
+  Q0 --> T
+  T -->|"what the Owner did or saw"| L1
+  T -->|"observed runtime or repo fact"| L2
+  T -->|"project truth, sequencing, acceptance"| L3
+  T -->|"was the exact directive consumed"| L4
+  T -->|"is delivery ready, delivered or in flight"| L5
+  T -->|"project-facing summary"| L6
+  T -->|"Management restart or coordination state"| L7
+  T -->|"what the Owner Brief shows"| L8
+  T -->|"anything else derived"| L9
+  L1 --> FR
+  L2 --> FR
+  L3 --> FR
+  L4 --> FR
+  L5 --> FR
+  L6 --> FR
+  L7 --> FR
+  L8 --> FR
+  L9 --> FR
+  FR -->|"material event after AS_OF"| ST
+  FR -->|"age - Owner Brief over 4 h, Chief CURRENT over 24 h, Delivery READY or IN_FLIGHT over 24 h, PM Executive Status per lifecycle window, live runtime observation over 15 min"| ST
+  FR -->|"size - above 25,000 chars or 300 paragraphs, or any contradiction that could change routing"| ST
+  FR -->|"fresh"| CF
+  ST --> MARK
+  MARK --> REF
+  REF --> FR
+  CF -->|"yes"| NR
+  NR --> FC
+  CF -->|"no"| USE
+  USE --> GO

@@ -1,0 +1,55 @@
+flowchart TD
+  OWNER["Owner - final authority"]
+  CHIEF["Chief of Staff / Owner Briefing - front door, classify and route, one Owner task rendered at a time"]
+  CLASS{"Which authority owns this item"}
+  CEO["CEO / Executive Control Room - priority, lifecycle, capacity allocation, standards ratification, conflicts"]
+  MSA["Management Systems Architect - management-system design, standards, routing architecture, structural audits"]
+  PCP["Portfolio and Capacity Planner - advisory capacity, dependency, concurrency analysis"]
+  DA["Executive Operations and Delivery Assurance - delivery state, activation packets, invariant checks"]
+  PM["Responsible Project PM / Control Room - via project From_Management inbox, written by an authorized executive writer - role set not enumerated in sources"]
+  FL["AI Frontier Lab - R and D department - OBSERVED PRACTICE, not in the ratified escalation path"]
+  CHIEFWORK["Chief executes within own authority - consolidate, dedupe, render Owner Brief"]
+  FROMCEO["AI_Management_Chief_of_Staff_From_CEO_Current.md"]
+  MAILBOXES["All executive To-CEO and From-CEO mailboxes plus CEO-owned OPEN items"]
+  DELIV_STATE["AI_Management_Executive_Delivery_Current.md - activation and delivery truth"]
+  NOTIF["AI_Management_Owner_Notifications_Current.md"]
+  TRIG["Fired TRIGGER_BOUND items reassessed from evidence"]
+  PROJ_TOMGMT["Project To_Management outboxes - FULL_MANAGED projects"]
+  LW["AI_Management_Lightweight_Portfolio_Current.md - PRIORITY_VISIBLE metadata only"]
+  CAP["Portfolio and capacity evidence for safe productive work"]
+  NONINT["Non-integrated domain chat, for example F-150 Lightning warranty obligation"]
+  GAP["GAP today - obligation stays in local chat memory, Chief inbox check saw only From-CEO"]
+  INTAKE["PROPOSED - one central Management-owned intake for lightweight or non-integrated chats"]
+  TRIGREG["PROPOSED - durable trigger registry / watchdog feeding the sweep"]
+
+  OWNER -->|"unstructured thought, question, concern, reminder, request, friction report"| CHIEF
+  FROMCEO --> CHIEF
+  MAILBOXES --> CHIEF
+  DELIV_STATE --> CHIEF
+  NOTIF --> CHIEF
+  TRIG --> CHIEF
+  PROJ_TOMGMT --> CHIEF
+  LW --> CHIEF
+  CAP --> CHIEF
+  NONINT -.->|"today - no defined destination"| GAP
+  NONINT -.->|"proposed intake path"| INTAKE
+  INTAKE -.-> CHIEF
+  TRIGREG -.-> CHIEF
+
+  CHIEF --> CLASS
+  CLASS -->|"cross-project priority, lifecycle, capacity, standard ratification, conflict"| CEO
+  CLASS -->|"management-system design, standard, workflow or product friction"| MSA
+  CLASS -->|"capacity, dependency, concurrency tradeoff"| PCP
+  CLASS -->|"delivery or activation failure, packet state"| DA
+  CLASS -->|"project or workstream issue"| PM
+  CLASS -.->|"discovery, novelty, R and D idea - observed once, not ratified"| FL
+  CLASS -->|"within Chief authority"| CHIEFWORK
+  MSA -->|"mandatory cross-project standard needs ratification"| CEO
+  PCP -->|"analysis and options, never final priority"| CEO
+  CEO -->|"CEO directives via role From-CEO mailboxes, stable IDs"| DA
+  DA -->|"verified packet - READY_FOR_CHIEF_RENDERING"| CHIEF
+  CHIEFWORK -->|"Owner Brief - display only"| OWNER
+  CHIEF -->|"PASTE INTO exact canonical chat name plus packet"| OWNER
+  OWNER -.->|"manual paste - Owner is the message bus"| CEO
+  OWNER -.->|"manual paste"| DA
+  OWNER -.->|"manual paste"| PM

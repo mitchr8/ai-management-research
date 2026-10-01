@@ -1,0 +1,50 @@
+flowchart TD
+  I["1 Owner design intent expressed in the Chief chat"]
+  C1["2 Chief records the requirement and prepares a concise proposed packet request - COS-CEO-N-nnn, READY_FOR_CEO_REVIEW"]
+  H1["Owner hop - activate CEO chat"]
+  C2["3 CEO validates priority and authority fit, checks conflict with existing directives and project authority"]
+  ARCH["Architect review only if CEO detects a structural or authority conflict"]
+  C3["CEO writes CEO-OPS-nnn to Delivery From-CEO, status OPEN"]
+  H2["Owner hop - activate Delivery chat"]
+  C4["4 Delivery verifies live state, duplicates, canonical destination and whether the packet is still appropriate - evidence order 1 to 4"]
+  NR["NOT_READY / BLOCKED - destination or a required field ambiguous, no send-ready Owner task"]
+  C5["5 store the final packet durably with stable ID and source pointers - VERIFIED / READY_FOR_OWNER_DELIVERY"]
+  C6["Response-To CEO-OPS-nnn COMPLETE, READY_FOR_CHIEF_RENDERING, NEEDS_OWNER_PING 1"]
+  H3["Owner hop - return to Chief with the DONE_EVENT"]
+  C7["Chief renders one packet - platform plus exact chat name, and model plus effort for coding agents"]
+  DEL{"Delegation evidence present - originating authority, stable ID, bounded scope, return or acceptance path"}
+  BYP["ROUTING_STATE = BYPASS_SUSPECTED - block consequential writes, read-only evidence only, route back to canonical authority"]
+  H4["6 Owner hop - send the validated packet once to the worker"]
+  C8["SENT_EVENT bound - DELIVERED / DELEGATED_IN_FLIGHT, duplicates suppressed, No-Idle rescan"]
+  W["worker executes bounded scope and writes durable recipient evidence - handoff, Status, Response-To"]
+  H5["Owner hop - report completion, or Chief reads durable evidence on next activation"]
+  C9["DONE_EVENT bound - reconcile Response-To, project and runtime evidence"]
+  T["COMPLETED / RECONCILED - closure evidence preserved, lane leaves live set"]
+  P["PARTIAL - remaining step inside packet scope, no new CEO or Delivery approval needed"]
+  REP["Owner hop - in-scope remediation instruction, no new approval - OBSERVED PRACTICE"]
+  NI["immediate No-Idle rescan - next stage becomes a new COS-CEO-N item, not a reuse of the terminal packet"]
+  I --> C1
+  C1 --> H1
+  H1 --> C2
+  C2 -->|"ACCEPT"| C3
+  C2 -->|"conflict"| ARCH
+  C2 -->|"MODIFY or BLOCK with minimum reason"| C1
+  C3 --> H2
+  H2 --> C4
+  C4 -->|"ambiguous"| NR
+  C4 -->|"clean"| C5
+  C5 --> C6
+  C6 --> H3
+  H3 --> C7
+  C7 --> DEL
+  DEL -->|"yes"| H4
+  DEL -->|"no"| BYP
+  H4 --> C8
+  C8 --> W
+  W --> H5
+  H5 --> C9
+  C9 -->|"complete"| T
+  C9 -->|"partial"| P
+  P --> REP
+  REP --> W
+  T --> NI

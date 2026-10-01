@@ -1,0 +1,27 @@
+sequenceDiagram
+  participant OW as Owner (manual bus)
+  participant CH as Chief of Staff chat
+  participant CEO as CEO / Executive Control Room chat
+  participant DA as Delivery Assurance chat
+  participant DR as Drive - durable packets and mailboxes
+  participant CL as Claude app - existing chat Relay Orchestrator
+  OW->>CH: design intent - protect the Claude window with a tiny tactical checkpoint before more Relay work
+  CH->>DR: write COS-CEO-N-024 to Chief To-CEO, READY_FOR_CEO_REVIEW / NOT YET DELIVERED
+  CH->>OW: PASTE INTO CEO chat - read and process COS-CEO-N-024
+  OW->>CEO: hop 1 - manual activation
+  CEO->>DR: ACCEPT for Delivery review, write CEO-OPS-010 to Delivery From-CEO
+  OW->>CH: hop 2 - reports sent then done, Chief persists SENT_EVENT and DONE_EVENT for COS-CEO-N-024
+  CH->>DR: reconcile - Delivery To-CEO has no Response-To CEO-OPS-010 yet, CEO step COMPLETED / RECONCILED
+  CH->>OW: PASTE INTO Delivery chat - process CEO-OPS-010
+  OW->>DA: hop 3 - manual activation
+  DA->>DR: live-state, duplicate, destination checks against Relay Issue Register, store packet VERIFIED / READY_FOR_OWNER_DELIVERY, Response-To CEO-OPS-010 COMPLETE
+  OW->>CH: hop 4 - reports Delivery COMPLETE, Chief persists DONE_EVENT, CEO-OPS-010 becomes OWNER_ACTION / READY_FOR_CHIEF_RENDERING
+  CH->>OW: render stored packet - platform Claude, PASTE INTO existing chat Relay Orchestrator
+  OW->>CL: hop 5 - send verified packet once
+  OW->>CH: hop 6 - confirms delivered and running, SENT_EVENT, CEO-OPS-010 DELIVERED / DELEGATED_IN_FLIGHT
+  CL->>DR: compact recovery handoff written, but To_Management publication FAILED (shell heredoc quoting error)
+  CH->>DR: reconcile fresh evidence - PARTIAL / CHECKPOINT_REACHED_BUT_PUBLICATION_INCOMPLETE
+  CH->>OW: instruct Relay Orchestrator to publish only the missing Response-To, via file-write tool, then stop
+  OW->>CL: hop 7 - repair instruction (exception path, still inside CEO-OPS-010 scope)
+  CL->>DR: Response-To MGMT-AR-MAINT-001 now live in AgentRelay_To_Management_Current.md
+  OW->>CH: hop 8 - report, Chief verifies checkpoint COMPLETE, DONE_EVENT, No-Idle rescan, creates COS-CEO-N-025

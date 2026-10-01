@@ -1,0 +1,39 @@
+flowchart TD
+  EV["Owner says sent, or worker/PM says done, or durable completion evidence appears"]
+  BIND{"Can the event be bound to exact destination, lane and stable ID"}
+  UNB["mark SENT_EVENT_UNBOUND / NEEDS_RECONCILIATION - do not guess"]
+  TR["persist the lane transition in the same handling turn - destination, IDs, event time, evidence"]
+  SUP["suppress duplicate resend or stale in-flight prompts for that destination plus stable ID"]
+  INV["Delivery bounded invariant checks - INV-SENT, INV-DONE, INV-DELIVERY, INV-RENDER, INV-NOIDLE, INV-INDEPENDENT"]
+  S1["1 reconcile the exact changed lane"]
+  S2["2 inspect READY_SAFE_PARALLEL work"]
+  S3["3 inspect fired triggers and resumption conditions"]
+  S4["4 reconcile pending OWNER_ACTION packets"]
+  S5["5 reconcile Delivery state"]
+  S6["6 inspect capacity and dependencies relevant to newly executable work"]
+  S7["7 inspect relevant project Management interfaces without violating PM authority or Deferred Sync - Chief LP"]
+  S8["8 inspect pending CEO, Architect, Delivery and Chief work - Chief LP"]
+  Q{"Executable work found"}
+  R1["AI-role work - route or execute through the owning authority, no Owner ping"]
+  R2["genuine Owner packet - render one complete packet, PASTE INTO exact chat"]
+  R3["none - claim no current work only after the full sweep, never from NEEDS_OWNER_PING = 0 alone"]
+  G["never wait behind unrelated DELEGATED_IN_FLIGHT lanes"]
+  EV --> BIND
+  BIND -->|"no"| UNB
+  BIND -->|"yes"| TR
+  TR --> SUP
+  SUP --> INV
+  INV --> S1
+  S1 --> S2
+  S2 --> S3
+  S3 --> S4
+  S4 --> S5
+  S5 --> S6
+  S6 --> S7
+  S7 --> S8
+  S8 --> Q
+  Q -->|"AI-executable"| R1
+  Q -->|"Owner required"| R2
+  Q -->|"nothing"| R3
+  R1 --> G
+  R2 --> G

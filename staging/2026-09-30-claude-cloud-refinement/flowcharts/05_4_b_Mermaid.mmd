@@ -1,0 +1,57 @@
+flowchart TD
+  A["1 REGISTER - a recurring, deferred, review or curation responsibility declares a trigger-complete record"]
+  F["fields - trigger condition, detection owner, exact executor, dedup and suppression rule, reset or close condition, Owner-friction rule"]
+  B["2 DURABLE TRIGGER TRUTH - written to a durable surface, never left in chat memory"]
+  B1["today - WAIT_TRIGGER lane with exact trigger, evidence source, prerequisites, packet template"]
+  B2["today - TRIGGER_BOUND item in a project From_Management inbox"]
+  B3["today - Owner Notifications Current file - MGMT-NOTIF-001 still OPEN in mirror"]
+  B3b["today - Delivery dormant trigger-bound index - MGMT-NOTIF-001 preserved there too"]
+  B3c["today - Architect AUDIT_AS_OF and NEXT_DUE"]
+  B4["PROPOSED - one central trigger registry / watchdog covering all due obligations"]
+  C{"3 DETECTION - who notices that it is due"}
+  D["Chief or Delivery evidence-first check of the registered trigger - function ownership UNRESOLVED, Item 8"]
+  CATCH["PROPOSED - catch-up sweep of all due obligations when the last-sweep timestamp shows a missed run"]
+  E{"4 FIRED and still valid"}
+  SUP["suppress - already consumed, superseded or withdrawn, dedupe by stable ID, no Owner ping"]
+  G["5 EVIDENCE-FIRST RECONCILE readiness - recipient Response-To, recipient current state, reconciled Management state, Owner confirmation last"]
+  H{"6 EXACT PACKET FIELDS KNOWN - destination, mailbox or file, stable IDs, prompt or action, completion condition"}
+  NR["NOT_READY / BLOCKED_SCOPE - hold as durable state, never surface a vague reminder"]
+  P1["materialize packet and route to the owning AI role - READY_SAFE_PARALLEL"]
+  P2["materialize Owner packet - OWNER_ACTION, PASTE INTO exact chat, one at a time"]
+  S["7 SENT_EVENT - DELIVERED / DELEGATED_IN_FLIGHT, duplicates suppressed"]
+  DN["DONE_EVENT - durable recipient evidence bound to the lane"]
+  NI["immediate No-Idle rescan"]
+  Z{"8 CLOSE or RESET"}
+  CL["close - preserve stable ID, disposition, evidence, remove from live set, archive temporary artifacts"]
+  RS["reset - recompute next due from completion, for example AUDIT_AS_OF plus 7 or 30 days"]
+  A --> F
+  F --> B
+  B --> B1
+  B --> B2
+  B --> B3
+  B --> B3b
+  B --> B3c
+  B -.-> B4
+  B --> C
+  C -->|"event-driven - natural activation of Chief or Delivery, after any SENT or DONE event"| D
+  C -.->|"PROPOSED - recurring lightweight sweep, change-rate-aware cadence"| D
+  C -.->|"external scheduled job - executor only, never the sole authoritative clock"| D
+  C -.-> CATCH
+  CATCH -.-> D
+  D --> E
+  E -->|"consumed or superseded"| SUP
+  E -->|"not yet due"| B
+  E -->|"fired"| G
+  G --> H
+  H -->|"missing fields"| NR
+  NR --> B
+  H -->|"AI-executable"| P1
+  H -->|"Owner required"| P2
+  P1 --> S
+  P2 --> S
+  S --> DN
+  DN --> NI
+  DN --> Z
+  Z -->|"one-shot"| CL
+  Z -->|"recurring"| RS
+  RS --> B

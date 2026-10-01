@@ -1,0 +1,34 @@
+stateDiagram-v2
+  [*] --> READY_SAFE_PARALLEL : AI-executable work identified by sweep - CANDIDATE, inferred entry
+  [*] --> OWNER_ACTION : verified packet rendered, Owner input genuinely required - CANDIDATE, inferred entry
+  [*] --> WAIT_TRIGGER : dated or conditional trigger registered with packet template - CANDIDATE, inferred entry
+  [*] --> WAIT_DEPENDENCY : external dependency or PM return awaited - CANDIDATE, inferred entry
+  OWNER_ACTION --> DELEGATED_IN_FLIGHT : SENT_EVENT bound to exact destination and stable ID, same turn
+  OWNER_ACTION --> SENT_EVENT_UNBOUND : SENT_EVENT cannot be bound confidently, mark NEEDS_RECONCILIATION
+  SENT_EVENT_UNBOUND --> DELEGATED_IN_FLIGHT : binding established from durable evidence - CANDIDATE, no ratified resolution rule
+  READY_SAFE_PARALLEL --> DELEGATED_IN_FLIGHT : routed or executed by the owning AI role, no Owner ping
+  DELEGATED_IN_FLIGHT --> COMPLETED_RECONCILED : DONE_EVENT bound and Response-To, project or runtime evidence reconciled
+  DELEGATED_IN_FLIGHT --> WAIT_DEPENDENCY : DONE_EVENT shows an external dependency remains
+  DELEGATED_IN_FLIGHT --> BLOCKED_SCOPE : DONE_EVENT shows a scoped blocker
+  DELEGATED_IN_FLIGHT --> OWNER_ACTION : DONE_EVENT shows a genuine Owner decision is next
+  DELEGATED_IN_FLIGHT --> READY_SAFE_PARALLEL : DONE_EVENT shows the next bounded stage is AI-executable
+  DELEGATED_IN_FLIGHT --> DO_NOT_DISTURB : active resource must remain untouched - CANDIDATE, no ratified entry rule
+  DO_NOT_DISTURB --> READY_SAFE_PARALLEL : active resource released - CANDIDATE, no ratified exit rule
+  WAIT_TRIGGER --> READY_SAFE_PARALLEL : trigger fired, evidence reconciled, exact packet materialized for an AI role
+  WAIT_TRIGGER --> OWNER_ACTION : trigger fired, exact Owner packet materialized
+  WAIT_TRIGGER --> BLOCKED_SCOPE : trigger fired but destination, authority or evidence incomplete, NOT_READY
+  WAIT_DEPENDENCY --> READY_SAFE_PARALLEL : dependency satisfied
+  WAIT_DEPENDENCY --> OWNER_ACTION : dependency satisfied and an Owner packet is required
+  BLOCKED_SCOPE --> READY_SAFE_PARALLEL : unblock condition met by the clearing authority - target state CANDIDATE, inferred
+  COMPLETED_RECONCILED --> [*] : closure evidence preserved, lane leaves the live set
+  note right of DELEGATED_IN_FLIGHT
+    Delivery launch prompt lists DELIVERED as a separate live state.
+    Brain and Global Brain use DELIVERED / DELEGATED_IN_FLIGHT as one transition target.
+    See gaps.
+  end note
+  note left of COMPLETED_RECONCILED
+    Every bound SENT_EVENT and DONE_EVENT triggers the immediate No-Idle rescan in Diagram 3b.
+    COMPLETED_RECONCILED is terminal evidence, not a live lane.
+    Transitions marked CANDIDATE are this document's inferences.
+    No ratified source defines a full transition matrix.
+  end note

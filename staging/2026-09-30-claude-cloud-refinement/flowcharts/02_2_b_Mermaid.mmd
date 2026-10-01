@@ -1,0 +1,35 @@
+sequenceDiagram
+  participant MG as Authorized executive writer - role set not enumerated in sources
+  participant FM as Project From_Management_Current.md (management-owned inbox)
+  participant DA as Delivery Assurance
+  participant CH as Chief of Staff
+  participant OW as Owner (manual bus)
+  participant PM as Project PM / Control Room chat
+  participant TM as Project To_Management_Current.md (project-owned outbox)
+  participant ES as Project Executive_Status_Current.md (snapshot)
+  MG->>FM: write item with stable ID, message class, status, priority, exactly one activation class
+  DA->>DA: index pending stable ID and activation class across projects
+  alt IMMEDIATE_ACTIVATION_REQUIRED
+    DA->>CH: verified activation packet, READY_FOR_CHIEF_RENDERING
+    CH->>OW: PASTE INTO exact canonical PM chat name, plus copyable packet
+    OW->>PM: manual paste of the packet
+  else DEFER_UNTIL_NEXT_NATURAL_ACTIVATION
+    Note over FM,PM: item waits, no manufactured wake-up, Delivery remembers the pending IDs
+    OW->>PM: next natural activation for other legitimate substantive work
+  else TRIGGER_BOUND
+    Note over FM,DA: dormant until the dated or conditional trigger fires, then reassess from evidence and reclassify
+  end
+  PM->>PM: IDENTITY GATE - compare directive target project, root, mailbox, stable IDs with canonical local identity
+  alt mismatch or ambiguous
+    PM-->>OW: FAIL CLOSED - do not execute, do not write foreign surfaces, return the canonical destination
+    Note over PM,TM: if foreign work was already processed it is NON_AUTHORITATIVE / BYPASS_SUSPECTED until the true PM reprocesses
+  else match or explicit bounded delegation present
+    PM->>FM: read all OPEN actionable items before substantive project work
+    PM->>PM: evidence-first reconcile, drop already-consumed IDs, process in activation-class and priority order, bundle into one sync
+    PM->>TM: Response-To incoming stable ID with explicit disposition (ACCEPT, MODIFY, DEFER, REJECT) or status
+    PM->>ES: refresh only on material event, include BLOCKED_ACTIONS, SAFE_PREWORK_ALLOWED, SAFE_PARALLEL_WORK_ALLOWED
+  end
+  MG->>TM: read the matching Response-To
+  MG->>FM: close the management-owned item (ACKNOWLEDGED, HANDLED, RESOLVED, WITHDRAWN or EXPIRED)
+  DA->>DA: DONE_EVENT bound, pending ID removed, invariant checks, immediate No-Idle rescan
+  CH->>CH: dedupe by stable ID, treat OPEN item with valid matching response as reconciliation lag, not a new Owner action
